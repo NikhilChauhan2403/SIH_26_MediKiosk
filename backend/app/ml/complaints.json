@@ -1,0 +1,372 @@
+{
+  "complaints": [
+    {
+      "id": "complaint_select",
+      "section": "chief_complaint",
+      "text_en": "What is the primary reason for your visit today?",
+      "text_hi": "आज अस्पताल आने का आपका मुख्य कारण क्या है?",
+      "audio_prompt_en": "Please tell us or select what brings you to the hospital today.",
+      "audio_prompt_hi": "कृपया बताएं कि आज आपको क्या तकलीफ है?",
+      "type": "single_choice",
+      "field": "chief_complaint",
+      "options": [
+        {
+          "value": "chest_pain",
+          "label_en": "Chest Pain or Discomfort",
+          "label_hi": "सीने में दर्द या भारीपन",
+          "icon": "❤️"
+        },
+        {
+          "value": "fever",
+          "label_en": "Fever or Chills",
+          "label_hi": "बुखार या ठंड लगना",
+          "icon": "🌡️"
+        },
+        {
+          "value": "headache",
+          "label_en": "Severe Headache",
+          "label_hi": "सिर में तेज दर्द",
+          "icon": "🤕"
+        },
+        {
+          "value": "ayush_consult",
+          "label_en": "Ayush / Holistic Wellness Consultation",
+          "label_hi": "आयुष / समग्र स्वास्थ्य परामर्श",
+          "icon": "🌿"
+        }
+      ]
+    }
+  ],
+  "chest_pain": [
+    {
+      "id": "cp_site",
+      "section": "hpi_socrates",
+      "socrates": "Site",
+      "text_en": "Where exactly is the pain located in your chest?",
+      "text_hi": "सीने में दर्द बिल्कुल किस जगह पर महसूस हो रहा है?",
+      "audio_prompt_en": "Where do you feel the chest pain?",
+      "audio_prompt_hi": "सीने में दर्द किस जगह हो रहा है?",
+      "type": "single_choice",
+      "field": "hpi.site",
+      "options": [
+        {"value": "center_substernal", "label_en": "Center of Chest (Behind breastbone)", "label_hi": "सीने के बीच में (हड्डी के पीछे)", "icon": "📍"},
+        {"value": "left_side", "label_en": "Left Side of Chest", "label_hi": "सीने के बाईं तरफ", "icon": "⬅️"},
+        {"value": "right_side", "label_en": "Right Side of Chest", "label_hi": "सीने के दाईं तरफ", "icon": "➡️"},
+        {"value": "entire_chest", "label_en": "Across Whole Chest / Diffuse", "label_hi": "पूरे सीने में फैला हुआ", "icon": "🔄"}
+      ]
+    },
+    {
+      "id": "cp_onset",
+      "section": "hpi_socrates",
+      "socrates": "Onset",
+      "text_en": "When did this chest pain start, and did it come on suddenly?",
+      "text_hi": "यह दर्द कब शुरू हुआ और क्या यह अचानक हुआ था?",
+      "audio_prompt_en": "When did the chest pain begin?",
+      "audio_prompt_hi": "यह दर्द कब से है?",
+      "type": "single_choice",
+      "field": "hpi.onset",
+      "options": [
+        {"value": "last_2_hours", "label_en": "Sudden onset in last 2 hours (Emergency)", "label_hi": "पिछले 2 घंटे में अचानक (गंभीर)", "icon": "⚡", "is_urgent": true},
+        {"value": "today_morning", "label_en": "Earlier today", "label_hi": "आज सुबह से", "icon": "🌅"},
+        {"value": "2_3_days", "label_en": "2 to 3 days ago", "label_hi": "2 से 3 दिन पहले", "icon": "📅"},
+        {"value": "chronic_weeks", "label_en": "Over a week or episodic", "label_hi": "एक हफ्ते या अधिक समय से", "icon": "⏳"}
+      ]
+    },
+    {
+      "id": "cp_character",
+      "section": "hpi_socrates",
+      "socrates": "Character",
+      "text_en": "How would you describe the feeling of the pain?",
+      "text_hi": "दर्द का अहसास कैसा है?",
+      "audio_prompt_en": "How does the pain feel? Is it heavy, sharp, or burning?",
+      "audio_prompt_hi": "दर्द किस तरह का लग रहा है? भारीपन, चुभन या जलन?",
+      "type": "single_choice",
+      "field": "hpi.character",
+      "options": [
+        {"value": "heavy_pressure", "label_en": "Heavy pressure / Tight squeezing / Crushing", "label_hi": "भारीपन, कसाव या भारी दबाव", "icon": "🏋️", "is_cardiac_marker": true},
+        {"value": "sharp_stabbing", "label_en": "Sharp, needle-like stabbing", "label_hi": "तेज चुभन या कांटे जैसा दर्द", "icon": "🗡️"},
+        {"value": "burning", "label_en": "Burning / Acid feeling", "label_hi": "जलन या एसिड जैसा अहसास", "icon": "🔥"},
+        {"value": "dull_ache", "label_en": "Dull continuous ache", "label_hi": "हल्का लेकिन लगातार दर्द", "icon": "🩹"}
+      ]
+    },
+    {
+      "id": "cp_radiation",
+      "section": "hpi_socrates",
+      "socrates": "Radiation",
+      "text_en": "Does the pain spread or shoot to other areas?",
+      "text_hi": "क्या यह दर्द शरीर के किसी अन्य हिस्से में भी जा रहा है?",
+      "audio_prompt_en": "Does the pain spread to your arm, neck, or back?",
+      "audio_prompt_hi": "क्या दर्द बांह, गर्दन या पीठ में फैल रहा है?",
+      "type": "multi_choice",
+      "field": "hpi.radiation",
+      "options": [
+        {"value": "left_arm", "label_en": "Left Arm or Shoulder", "label_hi": "बाईं बांह या कंधा", "icon": "💪", "is_cardiac_marker": true},
+        {"value": "jaw_neck", "label_en": "Neck, Throat, or Jaw", "label_hi": "गर्दन, गला या जबड़ा", "icon": "🗣️", "is_cardiac_marker": true},
+        {"value": "back", "label_en": "Between Shoulder Blades (Back)", "label_hi": "पीठ में कंधों के बीच", "icon": "🔙"},
+        {"value": "stomach", "label_en": "Upper Abdomen / Epigastric", "label_hi": "पेट के ऊपरी हिस्से में", "icon": "🫄"},
+        {"value": "none", "label_en": "No, stays in chest only", "label_hi": "नहीं, सिर्फ सीने में रहता है", "icon": "🛑"}
+      ]
+    },
+    {
+      "id": "cp_associated",
+      "section": "hpi_socrates",
+      "socrates": "Associated Symptoms",
+      "text_en": "Are you experiencing any of these accompanying symptoms?",
+      "text_hi": "क्या आपको इनमें से कोई अन्य लक्षण भी महसूस हो रहे हैं?",
+      "audio_prompt_en": "Do you also feel breathless, sweaty, dizzy, or nauseous?",
+      "audio_prompt_hi": "क्या आपको पसीना, सांस फूलना या चक्कर भी आ रहे हैं?",
+      "type": "multi_choice",
+      "field": "hpi.associated",
+      "options": [
+        {"value": "cold_sweating", "label_en": "Profuse Cold Sweating", "label_hi": "ठंडा पसीना छूटना", "icon": "💦", "is_red_flag": true},
+        {"value": "breathlessness", "label_en": "Difficulty Breathing / Shortness of Breath", "label_hi": "सांस लेने में भारी तकलीफ", "icon": "😮‍💨", "is_red_flag": true},
+        {"value": "dizziness_syncope", "label_en": "Dizziness, Blackout or Fainting", "label_hi": "चक्कर आना या बेहोशी", "icon": "💫", "is_red_flag": true},
+        {"value": "nausea_vomiting", "label_en": "Nausea or Vomiting", "label_hi": "जी मिचलाना या उल्टी", "icon": "🤢"},
+        {"value": "palpitations", "label_en": "Racing or Irregular Heartbeat", "label_hi": "दिल की धड़कन तेज होना", "icon": "💓"},
+        {"value": "none", "label_en": "None of these", "label_hi": "इनमें से कोई नहीं", "icon": "✔️"}
+      ]
+    },
+    {
+      "id": "cp_exacerbating",
+      "section": "hpi_socrates",
+      "socrates": "Exacerbating/Relieving",
+      "text_en": "What makes the pain worse or better?",
+      "text_hi": "किस काम से दर्द बढ़ता या कम होता है?",
+      "audio_prompt_en": "Does walking or exertion make it worse? Does rest relieve it?",
+      "audio_prompt_hi": "क्या चलने से दर्द बढ़ता है और आराम करने से घटता है?",
+      "type": "single_choice",
+      "field": "hpi.exacerbating_relieving",
+      "options": [
+        {"value": "worse_exertion_better_rest", "label_en": "Worse with walking/stairs, relieved by rest", "label_hi": "चलने से बढ़ता है, आराम से घटता है", "icon": "🚶", "is_cardiac_marker": true},
+        {"value": "worse_deep_breath", "label_en": "Worse on deep breathing or coughing", "label_hi": "लंबी सांस लेने या खांसने पर बढ़ता है", "icon": "🫁"},
+        {"value": "worse_after_food", "label_en": "Worse after spicy/heavy meals or lying down", "label_hi": "खाना खाने या लेटने के बाद बढ़ता है", "icon": "🍽️"},
+        {"value": "constant_no_change", "label_en": "Constant pain, no change with rest or motion", "label_hi": "लगातार एक जैसा रहता है", "icon": "⏸️"}
+      ]
+    },
+    {
+      "id": "cp_severity",
+      "section": "hpi_socrates",
+      "socrates": "Severity",
+      "text_en": "On a scale of 1 to 10, how severe is your pain right now?",
+      "text_hi": "1 से 10 के पैमाने पर, अभी दर्द कितना तेज है?",
+      "audio_prompt_en": "Please rate your pain from 1 mild to 10 unbearable.",
+      "audio_prompt_hi": "1 से 10 तक दर्द की तीव्रता बताएं।",
+      "type": "number_scale",
+      "field": "hpi.severity",
+      "min": 1,
+      "max": 10,
+      "options": [
+        {"value": "2", "label_en": "1-3 Mild", "label_hi": "1-3 हल्का", "icon": "🟢"},
+        {"value": "5", "label_en": "4-6 Moderate", "label_hi": "4-6 मध्यम", "icon": "🟡"},
+        {"value": "8", "label_en": "7-8 Severe", "label_hi": "7-8 बहुत तेज", "icon": "🟠"},
+        {"value": "10", "label_en": "9-10 Unbearable / Emergency", "label_hi": "9-10 असहनीय", "icon": "🔴", "is_red_flag": true}
+      ]
+    }
+  ],
+  "fever": [
+    {
+      "id": "fv_duration",
+      "section": "hpi_fever",
+      "text_en": "How many days have you had fever?",
+      "text_hi": "आपको कितने दिनों से बुखार है?",
+      "audio_prompt_en": "How many days have you had a fever?",
+      "audio_prompt_hi": "बुखार कितने दिनों से है?",
+      "type": "single_choice",
+      "field": "hpi.duration",
+      "options": [
+        {"value": "1_day", "label_en": "Started today / 1 day", "label_hi": "आज से / 1 दिन", "icon": "1️⃣"},
+        {"value": "2_4_days", "label_en": "2 to 4 days", "label_hi": "2 से 4 दिन", "icon": "📅"},
+        {"value": "5_7_days", "label_en": "5 to 7 days (Persistent)", "label_hi": "5 से 7 दिन", "icon": "🗓️"},
+        {"value": "over_1_week", "label_en": "More than a week", "label_hi": "एक हफ्ते से ज्यादा", "icon": "⚠️"}
+      ]
+    },
+    {
+      "id": "fv_pattern",
+      "section": "hpi_fever",
+      "text_en": "Does the fever come with shivering (chills) or severe sweating?",
+      "text_hi": "क्या बुखार कंपकंपी (ठंड) या पसीने के साथ आता है?",
+      "audio_prompt_en": "Do you get severe chills, rigor, or shivering with the fever?",
+      "audio_prompt_hi": "क्या ठंड लगकर कंपकंपी के साथ बुखार आता है?",
+      "type": "single_choice",
+      "field": "hpi.pattern",
+      "options": [
+        {"value": "high_chills", "label_en": "High grade with shivering chills & rigors", "label_hi": "कंपकंपी व तेज ठंड के साथ", "icon": "🥶"},
+        {"value": "evening_rise", "label_en": "Rises mostly in evenings with night sweats", "label_hi": "शाम के वक्त बढ़ता है", "icon": "🌆"},
+        {"value": "continuous_mild", "label_en": "Continuous low-grade warm feeling", "label_hi": "लगातार हल्का बुखार", "icon": "🌡️"}
+      ]
+    },
+    {
+      "id": "fv_associated",
+      "section": "hpi_fever",
+      "text_en": "Do you have any of these additional symptoms?",
+      "text_hi": "क्या इनमें से कोई अन्य लक्षण भी हैं?",
+      "audio_prompt_en": "Any cough, rash, breathing difficulty, or confusion?",
+      "audio_prompt_hi": "क्या खांसी, त्वचा पर दाने या सांस लेने में परेशानी है?",
+      "type": "multi_choice",
+      "field": "hpi.associated",
+      "options": [
+        {"value": "confusion_drowsy", "label_en": "Confusion, Extreme Drowsiness or Delirium", "label_hi": "बेहोशी, भ्रम या बहुत सुस्ती", "icon": "😵", "is_red_flag": true},
+        {"value": "rash_petechiae", "label_en": "Red spots / Bleeding rash on skin", "label_hi": "त्वचा पर लाल चकत्ते या खून के धब्बे", "icon": "🔴", "is_red_flag": true},
+        {"value": "severe_breathlessness", "label_en": "Severe breathlessness / Fast breathing", "label_hi": "सांस फूलना या तेज सांसें", "icon": "😮‍💨", "is_red_flag": true},
+        {"value": "cough_sputum", "label_en": "Cough with yellow/green phlegm", "label_hi": "खांसी और कफ", "icon": "🤧"},
+        {"value": "burning_urination", "label_en": "Burning or pain during urination", "label_hi": "पेशाब में जलन या दर्द", "icon": "🚽"},
+        {"value": "body_ache", "label_en": "Severe bone & joint aching (break-bone)", "label_hi": "बदन व जोड़ों में तेज दर्द", "icon": "🦴"}
+      ]
+    }
+  ],
+  "headache": [
+    {
+      "id": "ha_onset",
+      "section": "hpi_headache",
+      "text_en": "Did your headache reach maximum intensity within seconds (Thunderclap)?",
+      "text_hi": "क्या सिरदर्द कुछ ही सेकंडों में असहनीय तेज हो गया था (बिजली की तरह)?",
+      "audio_prompt_en": "Did the headache peak suddenly like a thunderclap?",
+      "audio_prompt_hi": "क्या सिरदर्द अचानक बिजली की कौंध की तरह बहुत तेज उठा?",
+      "type": "single_choice",
+      "field": "hpi.onset_type",
+      "options": [
+        {"value": "thunderclap_peak", "label_en": "Yes! Worst headache of my life in seconds", "label_hi": "हां! जीवन का सबसे भयंकर अचानक दर्द", "icon": "⚡", "is_red_flag": true},
+        {"value": "gradual_hours", "label_en": "Gradual buildup over several hours", "label_hi": "धीरे-धीरे कुछ घंटों में बढ़ा", "icon": "📈"},
+        {"value": "recurrent_migraine", "label_en": "Frequent periodic episodes (like previous migraines)", "label_hi": "पुराने माइग्रेन जैसा समय-समय पर", "icon": "🔁"}
+      ]
+    },
+    {
+      "id": "ha_associated",
+      "section": "hpi_headache",
+      "text_en": "Do you notice neck stiffness, weakness in face/arms, or light sensitivity?",
+      "text_hi": "क्या गर्दन में अकड़न, चेहरे या बांह में कमजोरी, या रोशनी से परेशानी है?",
+      "audio_prompt_en": "Any neck stiffness, one-sided weakness, or vision changes?",
+      "audio_prompt_hi": "क्या गर्दन मुड़ने में दिक्कत या शरीर के एक तरफ कमजोरी है?",
+      "type": "multi_choice",
+      "field": "hpi.associated",
+      "options": [
+        {"value": "neck_stiffness", "label_en": "Stiff neck (Unable to touch chin to chest)", "label_hi": "गर्दन में तेज अकड़न", "icon": "🧣", "is_red_flag": true},
+        {"value": "face_arm_weakness", "label_en": "Facial droop / Weakness or numbness on one side", "label_hi": "चेहरा या हाथ-पैर में सुन्नपन/कमजोरी", "icon": "⚠️", "is_red_flag": true},
+        {"value": "slurred_speech", "label_en": "Difficulty speaking or slurred speech", "label_hi": "बोलने में लड़खड़ाहट", "icon": "🗣️", "is_red_flag": true},
+        {"value": "photophobia_nausea", "label_en": "Sensitive to bright light and sound with nausea", "label_hi": "रोशनी और तेज आवाज से चिढ़ व उल्टी", "icon": "🕶️"},
+        {"value": "none", "label_en": "None of these", "label_hi": "इनमें से कोई नहीं", "icon": "✔️"}
+      ]
+    }
+  ],
+  "common_history": [
+    {
+      "id": "past_conditions",
+      "section": "past_history",
+      "text_en": "Do you have any existing long-term medical conditions?",
+      "text_hi": "क्या आपको पहले से इनमें से कोई बीमारी है?",
+      "audio_prompt_en": "Do you have diabetes, blood pressure, heart disease, or asthma?",
+      "audio_prompt_hi": "क्या आपको ब्लड प्रेशर, शुगर या दिल की कोई पुरानी बीमारी है?",
+      "type": "multi_choice",
+      "field": "past_history.medical",
+      "options": [
+        {"value": "hypertension", "label_en": "High Blood Pressure (Hypertension)", "label_hi": "हाई ब्लड प्रेशर (उच्च रक्तचाप)", "icon": "🩺"},
+        {"value": "diabetes", "label_en": "Diabetes (Sugar)", "label_hi": "डायबिटीज (शुगर)", "icon": "🩸"},
+        {"value": "heart_disease", "label_en": "Heart Attack, Stent or Angina", "label_hi": "हार्ट अटैक, स्टेंट या दिल का रोग", "icon": "🫀"},
+        {"value": "asthma_copd", "label_en": "Asthma / Breathing Trouble", "label_hi": "अस्थमा / दमा", "icon": "🌬️"},
+        {"value": "kidney_disease", "label_en": "Kidney Problems", "label_hi": "गुर्दे (किडनी) की बीमारी", "icon": "🫘"},
+        {"value": "none", "label_en": "No major past illnesses", "label_hi": "कोई पुरानी बीमारी नहीं", "icon": "✅"}
+      ]
+    },
+    {
+      "id": "current_drugs",
+      "section": "drugs",
+      "text_en": "Are you taking regular medications right now?",
+      "text_hi": "क्या आप वर्तमान में कोई नियमित दवाएं ले रहे हैं?",
+      "audio_prompt_en": "Are you currently taking any daily medicines or blood thinners?",
+      "audio_prompt_hi": "क्या आप रोज कोई गोली ले रहे हैं जैसे खून पतला करने की दवा?",
+      "type": "multi_choice",
+      "field": "drugs",
+      "options": [
+        {"value": "blood_thinners", "label_en": "Blood Thinners (Aspirin / Warfarin / Clopidogrel)", "label_hi": "खून पतला करने की दवा (एस्पिरिन आदि)", "icon": "💊", "is_safety_flag": true},
+        {"value": "bp_meds", "label_en": "BP Medication (Amlodipine, Telmisartan, etc.)", "label_hi": "बीपी की गोलियां", "icon": "💊"},
+        {"value": "diabetes_meds", "label_en": "Diabetes Pills or Insulin Injection", "label_hi": "शुगर की दवा या इंसुलिन", "icon": "💉"},
+        {"value": "ayurvedic_herbs", "label_en": "Ayurvedic / Herbal Remedies", "label_hi": "आयुर्वेदिक या देशी दवाएं", "icon": "🌿"},
+        {"value": "none", "label_en": "None / Not taking any medicines", "label_hi": "कोई दवा नहीं", "icon": "❌"}
+      ]
+    },
+    {
+      "id": "allergies",
+      "section": "allergies",
+      "text_en": "Do you have known allergies to any medicines or foods?",
+      "text_hi": "क्या आपको किसी दवा या खाद्य पदार्थ से एलर्जी है?",
+      "audio_prompt_en": "Do you have any known drug or food allergies?",
+      "audio_prompt_hi": "क्या आपको किसी दवा से रिएक्शन या एलर्जी होती है?",
+      "type": "multi_choice",
+      "field": "allergies",
+      "options": [
+        {"value": "penicillin_antibiotics", "label_en": "Penicillin / Antibiotics", "label_hi": "पेनिसिलिन या एंटीबायोटिक", "icon": "⚠️", "is_allergy": true},
+        {"value": "painkillers_nsaids", "label_en": "Painkillers (Brufen, Diclofenac, Sulfa)", "label_hi": "दर्द निवारक दवाएं", "icon": "⚠️", "is_allergy": true},
+        {"value": "food_allergies", "label_en": "Food Allergies (Peanuts, Eggs, Seafood)", "label_hi": "खाद्य एलर्जी", "icon": "🥜"},
+        {"value": "none", "label_en": "No known allergies (NKDA)", "label_hi": "कोई ज्ञात एलर्जी नहीं", "icon": "🛡️"}
+      ]
+    }
+  ],
+  "ayush_mode": [
+    {
+      "id": "ayush_prakriti",
+      "section": "ayush",
+      "ayush_concept": "Prakriti",
+      "text_en": "AYUSH Body Constitution (Prakriti): How is your natural tolerance to weather and body build?",
+      "text_hi": "आयुष प्रकृति: आपका शारीरिक गठन और मौसम सहनशीलता कैसी है?",
+      "audio_prompt_en": "AYUSH Assessment: Do you feel more sensitive to cold, heat, or heavy weather?",
+      "audio_prompt_hi": "आयुष परीक्षण: आपको ठंड अधिक लगती है, गर्मी या कफ की शिकायत रहती है?",
+      "type": "single_choice",
+      "field": "ayush.prakriti",
+      "options": [
+        {"value": "vata", "label_en": "Vata (Lean build, sensitive to cold/wind, dry skin, quick mind)", "label_hi": "वात (दुबला शरीर, ठंड से संवेदनशीलता, शुष्क त्वचा)", "icon": "💨"},
+        {"value": "pitta", "label_en": "Pitta (Medium build, intolerant to heat, sharp digestion, easily irritated)", "label_hi": "पित्त (मध्यम शरीर, गर्मी बर्दाश्त न होना, तीक्ष्ण भूख)", "icon": "🔥"},
+        {"value": "kapha", "label_en": "Kapha (Solid/heavy build, calm disposition, slow digestion, prefers warm dry)", "label_hi": "कफ (मजबूत/भारी शरीर, शांत स्वभाव, मंद पाचन)", "icon": "🌊"}
+      ]
+    },
+    {
+      "id": "ayush_agni",
+      "section": "ayush",
+      "ayush_concept": "Agni",
+      "text_en": "Agni (Digestive Fire): How is your daily appetite and digestion?",
+      "text_hi": "अग्नि (पाचन शक्ति): आपकी भूख और पाचन क्रिया कैसी रहती है?",
+      "audio_prompt_en": "How is your digestion and appetite?",
+      "audio_prompt_hi": "आपकी भूख और भोजन पचने की गति कैसी है?",
+      "type": "single_choice",
+      "field": "ayush.agni",
+      "options": [
+        {"value": "samagni", "label_en": "Samagni (Balanced & regular appetite)", "label_hi": "समाग्नि (संतुलित व समय पर भूख)", "icon": "⚖️"},
+        {"value": "vishamagni", "label_en": "Vishamagni (Irregular, bloating & gas)", "label_hi": "विषमाग्नि (अनियमित, गैस व अफरा)", "icon": "💨"},
+        {"value": "tikshnagni", "label_en": "Tikshnagni (Excessive heat, acidity & hyper-hunger)", "label_hi": "तीक्ष्णाग्नि (अत्यधिक भूख व खट्टी डकारें/एसिडिटी)", "icon": "🌶️"},
+        {"value": "mandagni", "label_en": "Mandagni (Sluggish appetite, heaviness after eating)", "label_hi": "मंदाग्नि (धीमी भूख, खाने के बाद भारीपन)", "icon": "🐢"}
+      ]
+    },
+    {
+      "id": "ayush_koshtha",
+      "section": "ayush",
+      "ayush_concept": "Koshtha",
+      "text_en": "Koshtha (Bowel Nature): How is your bowel elimination pattern?",
+      "text_hi": "कोष्ठ (शौच स्वभाव): पेट साफ होने की प्रवृत्ति कैसी है?",
+      "audio_prompt_en": "How is your bowel movement regularity?",
+      "audio_prompt_hi": "पेट साफ होने की आदत कैसी है?",
+      "type": "single_choice",
+      "field": "ayush.koshtha",
+      "options": [
+        {"value": "krura", "label_en": "Krura Koshtha (Hard stools, constipation, difficult)", "label_hi": "क्रूर कोष्ठ (कब्ज, सख्त मल, कठिनाई)", "icon": "🧱"},
+        {"value": "madhyama", "label_en": "Madhyama Koshtha (Normal, once daily without difficulty)", "label_hi": "मध्यम कोष्ठ (सामान्य, दिन में एक बार आसानी से)", "icon": "👍"},
+        {"value": "mridu", "label_en": "Mridu Koshtha (Loose easily with warm milk or mild foods)", "label_hi": "मृदु कोष्ठ (हल्की ढीली, दूध से भी पेट साफ हो जाना)", "icon": "🥛"}
+      ]
+    },
+    {
+      "id": "ayush_ahara_vihara",
+      "section": "ayush",
+      "ayush_concept": "Ahara-Vihara",
+      "text_en": "Lifestyle & Sleep (Ahara-Vihara): Do you have late night work or high mental stress?",
+      "text_hi": "आहार-विहार व निद्रा: क्या देर रात तक जागना या अत्यधिक मानसिक तनाव रहता है?",
+      "audio_prompt_en": "Do you work late night shifts or face regular stress?",
+      "audio_prompt_hi": "क्या रात में देर से सोते हैं या तनाव अधिक रहता है?",
+      "type": "multi_choice",
+      "field": "ayush.ahara_vihara",
+      "options": [
+        {"value": "ratri_jagarana", "label_en": "Ratri Jagarana (Late sleeping / night shifts)", "label_hi": "रात्रि जागरण (देर रात तक जागना)", "icon": "🌙"},
+        {"value": "manasika_chinta", "label_en": "Manasika Chinta (High worry & mental stress)", "label_hi": "मानसिक चिंता व तनाव", "icon": "🤯"},
+        {"value": "tikshna_ahara", "label_en": "Fried, highly spicy, or junk food intake", "label_hi": "तली-भुनी, तीखी या बासी खुराक", "icon": "🍟"},
+        {"value": "regular_balanced", "label_en": "Regular, peaceful routine & early sleep", "label_hi": "नियमित व समय पर सोना-जागना", "icon": "🧘"}
+      ]
+    }
+  ]
+}
