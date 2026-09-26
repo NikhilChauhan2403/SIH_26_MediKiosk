@@ -1,0 +1,93 @@
+/* MediKiosk Custom Styles & Accessibility Modes */
+:root {
+  --primary: #0284c7;
+  --primary-hover: #0369a1;
+  --accent-ayush: #059669;
+  --danger-red: #dc2626;
+  --warning-amber: #d97706;
+}
+
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Accessibility: High Contrast Mode */
+body.high-contrast {
+  background-color: #000000 !important;
+  color: #ffffff !important;
+}
+
+body.high-contrast .bg-white {
+  background-color: #121212 !important;
+  color: #ffffff !important;
+  border-color: #ffffff !important;
+}
+
+body.high-contrast .text-slate-600,
+body.high-contrast .text-slate-500,
+body.high-contrast .text-slate-700 {
+  color: #e2e8f0 !important;
+}
+
+body.high-contrast .border-slate-200,
+body.high-contrast .border-slate-100 {
+  border-color: #ffffff !important;
+}
+
+/* Accessibility: Large Text Mode */
+body.large-text {
+  font-size: 1.2rem !important;
+}
+body.large-text h1 { font-size: 2.2rem !important; }
+body.large-text h2 { font-size: 1.8rem !important; }
+body.large-text h3 { font-size: 1.5rem !important; }
+body.large-text button { font-size: 1.25rem !important; padding: 1rem 1.5rem !important; }
+
+/* Pulse animation for Red Flag Emergencies */
+@keyframes urgent-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7);
+  }
+  50% {
+    box-shadow: 0 0 0 14px rgba(220, 38, 38, 0);
+  }
+}
+
+.pulse-red-flag {
+  animation: urgent-pulse 2s infinite;
+}
+
+/* Microphone Ripple Animation */
+@keyframes mic-wave {
+  0% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(14, 165, 233, 0.7);
+  }
+  70% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 20px rgba(14, 165, 233, 0);
+  }
+  100% {
+    transform: scale(0.95);
+    box-shadow: 0 0 0 0 rgba(14, 165, 233, 0);
+  }
+}
+
+.recording-pulse {
+  animation: mic-wave 1.5s infinite;
+  background-color: #ef4444 !important;
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}

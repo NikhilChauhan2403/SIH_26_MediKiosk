@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MediKiosk - Smart Patient Case-Taking Kiosk & Doctor Portal</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col transition-colors duration-200">
+
+  <!-- Top Navigation & Role Bar -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      
+      <!-- Brand & SIH Badge -->
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-sky-600 to-teal-500 flex items-center justify-center text-white font-bold text-xl shadow-md">
+          M
+        </div>
+        <div>
+          <div class="flex items-center space-x-2">
+            <span class="font-bold text-lg text-slate-900 tracking-tight">MediKiosk</span>
+            <span class="bg-emerald-100 text-emerald-800 text-xs font-semibold px-2 py-0.5 rounded-full border border-emerald-200">AIIA / Ayush</span>
+            <span class="bg-sky-100 text-sky-800 text-xs font-semibold px-2 py-0.5 rounded-full border border-sky-200">SIH 2026</span>
+          </div>
+          <p class="text-xs text-slate-500">Autonomous Clinical History Software</p>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs (Kiosk vs Doctor vs Patient Records) -->
+      <nav class="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200">
+        <button id="navKiosk" onclick="switchView('kiosk')" class="px-4 py-1.5 rounded-lg text-sm font-medium transition-all bg-white text-sky-700 shadow-sm flex items-center space-x-2">
+          <i data-lucide="tablet" class="w-4 h-4"></i>
+          <span>Patient Kiosk</span>
+        </button>
+        <button id="navDoctor" onclick="switchView('doctor')" class="px-4 py-1.5 rounded-lg text-sm font-medium transition-all text-slate-600 hover:text-slate-900 flex items-center space-x-2">
+          <i data-lucide="stethoscope" class="w-4 h-4"></i>
+          <span>Doctor Portal</span>
+          <span id="badgeRedFlags" class="hidden bg-red-600 text-white text-xs px-1.5 py-0.2 rounded-full font-bold">1</span>
+        </button>
+        <button id="navPatient" onclick="switchView('patient')" class="px-4 py-1.5 rounded-lg text-sm font-medium transition-all text-slate-600 hover:text-slate-900 flex items-center space-x-2">
+          <i data-lucide="user" class="w-4 h-4"></i>
+          <span>My Records</span>
+        </button>
+      </nav>
+
+      <!-- Accessibility & Language Controls -->
+      <div class="flex items-center space-x-2">
+        <!-- Language Toggle -->
+        <button id="btnLangToggle" onclick="toggleLanguage()" class="px-3 py-1.5 rounded-lg border border-slate-300 text-xs font-semibold hover:bg-slate-50 flex items-center space-x-1.5 text-slate-700">
+          <i data-lucide="languages" class="w-4 h-4 text-sky-600"></i>
+          <span id="lblLang">हिन्दी (Hindi)</span>
+        </button>
+
+        <!-- High Contrast -->
+        <button onclick="toggleHighContrast()" title="High Contrast Mode" class="p-2 rounded-lg border border-slate-300 text-slate-600 hover:bg-slate-50">
+          <i data-lucide="eye" class="w-4 h-4"></i>
+        </button>
+
+        <!-- Large Font -->
+        <button onclick="toggleLargeFont()" title="Large Font Mode" class="p-2 rounded-lg border border-slate-300 text-slate-600 hover:bg-slate-50 font-bold text-xs">
+          A+
+        </button>
+
+        <!-- Voice Narration Toggle -->
+        <button id="btnTtsToggle" onclick="toggleAudioNarration()" title="Audio Guidance" class="p-2 rounded-lg border border-slate-300 text-slate-600 hover:bg-slate-50">
+          <i data-lucide="volume-2" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- Global Red-Flag Alert Banner (Populated if patient is in distress) -->
+  <div id="globalEmergencyBanner" class="hidden bg-red-600 text-white px-4 py-3 shadow-lg flex items-center justify-between z-40 pulse-red-flag">
+    <div class="max-w-7xl mx-auto w-full flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <i data-lucide="alert-triangle" class="w-6 h-6 flex-shrink-0 animate-bounce"></i>
+        <div>
+          <span class="font-bold uppercase tracking-wider text-sm">Emergency Red-Flag Triggered: </span>
+          <span id="txtEmergencyBanner" class="text-sm">Signs of acute cardiac distress detected. Please guide patient immediately to Triage Counter.</span>
+        </div>
+      </div>
+      <button onclick="dismissEmergencyBanner()" class="bg-red-700 hover:bg-red-800 px-3 py-1 rounded text-xs font-semibold">
+        Acknowledge
+      </button>
+    </div>
+  </div>
+
+  <!-- Main Viewport -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
+
+    <!-- ==================== VIEW 1: PATIENT KIOSK ==================== -->
+    <section id="viewKiosk" class="space-y-6">
+
+      <!-- Step 0: Welcome / Mode Selection -->
+      <div id="kioskStepWelcome" class="bg-white rounded-2xl border border-slate-200 p-8 shadow-sm text-center max-w-3xl mx-auto space-y-6">
+        <div class="w-16 h-16 bg-sky-50 text-sky-600 rounded-full flex items-center justify-center mx-auto mb-2">
+          <i data-lucide="heart-pulse" class="w-8 h-8"></i>
+        </div>
+        <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight" id="txtWelcomeTitle">
+          Welcome to MediKiosk
+        </h1>
+        <p class="text-slate-600 max-w-lg mx-auto leading-relaxed" id="txtWelcomeSubtitle">
+          Answer simple questions by voice or touch before meeting the doctor. Upload old prescriptions and get instant priority triage.
+        </p>
+
+        <!-- Quick Demo Profiles & ABHA Login -->
+        <div class="bg-sky-50/60 border border-sky-100 rounded-xl p-5 text-left space-y-4">
+          <div class="flex items-center justify-between">
+            <span class="text-xs font-bold text-sky-900 uppercase tracking-wide flex items-center space-x-1.5">
+              <i data-lucide="shield-check" class="w-4 h-4 text-sky-600"></i>
+              <span>Ayushman Bharat Digital Mission (ABDM)</span>
+            </span>
+            <span class="text-xs text-sky-700 bg-sky-100 px-2 py-0.5 rounded">Mock Gateway</span>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-xs font-medium text-slate-700 mb-1">ABHA Number / Address</label>
+              <input type="text" id="inpAbhaId" value="91-8822-1144-5566" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500">
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-700 mb-1">OTP (Demo: 123456)</label>
+              <input type="text" id="inpAbhaOtp" value="123456" class="w-full px-3 py-2 text-sm border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500">
+            </div>
+          </div>
+
+          <div class="flex flex-wrap gap-2 pt-1">
+            <button onclick="loginAbha()" class="flex-1 bg-sky-600 hover:bg-sky-700 text-white font-semibold py-2.5 px-4 rounded-xl shadow transition-all flex items-center justify-center space-x-2">
+              <i data-lucide="log-in" class="w-4 h-4"></i>
+              <span>Verify ABHA & Begin Case Taking</span>
+            </button>
+            <button onclick="startDirectKiosk()" class="bg-slate-200 hover:bg-slate-300 text-slate-800 font-semibold py-2.5 px-4 rounded-xl transition-all">
+              Quick Walk-in (No ABHA)
+            </button>
+          </div>
+        </div>
+
+        <!-- Quick 1-Click SIH Hackathon Demo Presets -->
+        <div class="border-t border-slate-100 pt-5">
+          <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">1-Click Live Demo Scenarios</p>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <button onclick="loadScenario('chest_pain')" class="p-3 text-left border border-red-200 bg-red-50/50 hover:bg-red-100/60 rounded-xl transition-all">
+              <div class="flex items-center space-x-2 text-red-700 font-bold text-sm">
+                <span>⚡</span>
+                <span>Chest Pain (Red Flag)</span>
+              </div>
+              <p class="text-xs text-red-600 mt-1">Smt. Shanti Devi (62F), sweating + left arm, Warfarin+Aspirin</p>
+            </button>
+
+            <button onclick="loadScenario('fever')" class="p-3 text-left border border-amber-200 bg-amber-50/50 hover:bg-amber-100/60 rounded-xl transition-all">
+              <div class="flex items-center space-x-2 text-amber-700 font-bold text-sm">
+                <span>🌡️</span>
+                <span>Fever & Chills</span>
+              </div>
+              <p class="text-xs text-amber-600 mt-1">Rajesh Kumar (28M), 3 days high fever with rigors</p>
+            </button>
+
+            <button onclick="loadScenario('headache')" class="p-3 text-left border border-teal-200 bg-teal-50/50 hover:bg-teal-100/60 rounded-xl transition-all">
+              <div class="flex items-center space-x-2 text-teal-700 font-bold text-sm">
+                <span>🌿</span>
+                <span>Ayush Holistic Intake</span>
+              </div>
+              <p class="text-xs text-teal-600 mt-1">Prakriti, Agni, Koshtha & Ahara-Vihara assessment</p>
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Step 1: DPDP Act 2023 Consent Screen -->
+      <div id="kioskStepConsent" class="hidden bg-white rounded-2xl border border-slate-200 p-8 shadow-sm max-w-2xl mx-auto space-y-6">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+          <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold">
+              <i data-lucide="file-check" class="w-5 h-5"></i>
+            </div>
+            <div>
+              <h2 class="text-xl font-bold text-slate-900" id="txtConsentTitle">Patient Informed Consent</h2>
+              <p class="text-xs text-slate-500">Under Digital Personal Data Protection (DPDP) Act 2023</p>
+            </div>
+          </div>
+          <button onclick="speakConsent()" class="flex items-center space-x-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 rounded-lg text-xs font-semibold text-slate-700">
+            <i data-lucide="volume-2" class="w-4 h-4 text-sky-600"></i>
+            <span id="lblListenConsent">Listen (सुनें)</span>
+          </button>
+        </div>
+
+        <div class="space-y-4 text-sm text-slate-700 leading-relaxed bg-slate-50 p-5 rounded-xl border border-slate-200">
+          <div class="flex items-start space-x-3">
+            <input type="checkbox" id="chkStorageConsent" checked class="mt-1 w-4 h-4 text-sky-600 rounded">
+            <label for="chkStorageConsent" class="cursor-pointer">
+              <strong>Clinical History Recording:</strong> I consent to recording my symptoms via voice/touch to prepare a preliminary clinical draft for the attending doctor.
+            </label>
+          </div>
+          <div class="flex items-start space-x-3">
+            <input type="checkbox" id="chkDoctorAccess" checked class="mt-1 w-4 h-4 text-sky-600 rounded">
+            <label for="chkDoctorAccess" class="cursor-pointer">
+              <strong>Physician Access & Triage:</strong> I permit hospital clinical staff to review my drafted summary, past prescriptions, and lab values.
+            </label>
+          </div>
+          <div class="flex items-start space-x-3">
+            <input type="checkbox" id="chkResearchConsent" class="mt-1 w-4 h-4 text-sky-600 rounded">
+            <label for="chkResearchConsent" class="cursor-pointer">
+              <strong>De-identified AYUSH Analytics:</strong> I permit anonymized statistical data use for improving AYUSH clinical case studies.
+            </label>
+          </div>
+          <div class="text-xs text-slate-500 border-t border-slate-200 pt-3">
+            Note: You may revoke consent at any time via the patient portal. Audio transcripts are automatically wiped after submission.
+          </div>
+        </div>
+
+        <div class="flex justify-between items-center pt-2">
+          <button onclick="goToKioskStep('welcome')" class="px-4 py-2 border border-slate-300 rounded-xl text-slate-600 font-medium hover:bg-slate-50">
+            Cancel
+          </button>
+          <button onclick="submitConsentAndProceed()" class="bg-sky-600 hover:bg-sky-700 text-white font-semibold px-6 py-2.5 rounded-xl shadow flex items-center space-x-2">
+            <span id="lblAcceptConsent">I Consent & Continue</span>
+            <i data-lucide="arrow-right" class="w-4 h-4"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Step 2: Interactive Interview Screen (Voice + Tactile Cards) -->
+      <div id="kioskStepInterview" class="hidden max-w-3xl mx-auto space-y-6">
+
+        <!-- Progress Header -->
+        <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-3">
+          <div class="flex items-center justify-between text-xs text-slate-500 font-semibold">
+            <span id="lblInterviewProgress">Step 1 of 6: Chief Complaint</span>
+            <span id="lblPatientNameDisplay" class="bg-slate-100 px-2.5 py-1 rounded-full text-slate-700">Patient: Smt. Shanti Devi</span>
+          </div>
+          <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
+            <div id="barInterviewProgress" class="bg-sky-600 h-2 rounded-full transition-all duration-300" style="width: 15%"></div>
+          </div>
+        </div>
+
+        <!-- Question Card -->
+        <div class="bg-white rounded-2xl border border-slate-200 p-8 shadow-sm space-y-6">
+          <div class="flex items-start justify-between">
+            <div class="space-y-1">
+              <span id="lblQuestionSection" class="text-xs font-bold text-sky-600 uppercase tracking-wider">CHIEF COMPLAINT</span>
+              <h2 id="txtQuestionText" class="text-2xl font-bold text-slate-900 leading-snug">
+                What is the primary reason for your hospital visit today?
+              </h2>
+            </div>
+            <!-- Audio Speaker Button -->
+            <button id="btnReadQuestion" onclick="speakCurrentQuestion()" class="p-3 bg-sky-50 text-sky-600 hover:bg-sky-100 rounded-2xl transition-all flex-shrink-0" title="Read Aloud">
+              <i data-lucide="volume-2" class="w-6 h-6"></i>
+            </button>
+          </div>
+
+          <!-- Dynamic Options Grid -->
+          <div id="optionsContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+            <!-- Dynamically populated options cards -->
+          </div>
+
+          <!-- Speech-to-Text Voice Input Box -->
+          <div class="bg-slate-50 rounded-2xl p-5 border border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center space-x-3 w-full sm:w-auto">
+              <!-- Big Mic Button -->
+              <button id="btnMicInput" onclick="toggleVoiceInput()" class="w-14 h-14 rounded-full bg-sky-600 hover:bg-sky-700 text-white flex items-center justify-center shadow-lg transition-all flex-shrink-0">
+                <i data-lucide="mic" class="w-7 h-7"></i>
+              </button>
+              <div>
+                <p class="text-xs font-bold text-slate-800" id="lblMicStatus">Speak your answer in Hindi or English</p>
+                <p class="text-xs text-slate-500" id="lblMicHelp">e.g., "Seene mein dard hai" or "Chest pain"</p>
+              </div>
+            </div>
+
+            <!-- Live Speech Transcript display -->
+            <div id="transcriptBox" class="w-full flex-1 bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-600 italic min-h-[38px] flex items-center">
+              <span id="txtLiveTranscript">Listening for voice... (or tap options above)</span>
+            </div>
+          </div>
+
+          <!-- Bottom Action Buttons -->
+          <div class="flex justify-between items-center pt-2">
+            <button onclick="goToKioskStep('welcome')" class="px-4 py-2 border border-slate-300 rounded-xl text-slate-600 text-sm font-medium hover:bg-slate-50">
+              Restart
+            </button>
+            <button id="btnSubmitAnswer" onclick="submitCurrentAnswer()" class="bg-sky-600 hover:bg-sky-700 text-white font-semibold px-6 py-2.5 rounded-xl shadow text-sm flex items-center space-x-2">
+              <span id="lblNextBtn">Next Question</span>
+              <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Step 3: Document Upload & AI Reading Screen -->
+      <div id="kioskStepDocuments" class="hidden max-w-3xl mx-auto space-y-6">
+        <div class="bg-white rounded-2xl border border-slate-200 p-8 shadow-sm space-y-6">
+          <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+            <div>
+              <h2 class="text-2xl font-bold text-slate-900" id="txtDocUploadTitle">Upload Old Prescriptions & Lab Reports</h2>
+              <p class="text-xs text-slate-500">MediKiosk AI extracts medicine names, dosages, and abnormal lab flags automatically.</p>
+            </div>
+            <span class="bg-teal-50 text-teal-700 border border-teal-200 text-xs font-bold px-3 py-1 rounded-full">Step 2 of 3</span>
+          </div>
+
+          <!-- Quick Preloaded Hospital Document Buttons for Instant Testing -->
+          <div>
+            <p class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2.5">Instant Preloaded Demo Documents</p>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <button onclick="loadDemoDoc('cardiology')" class="p-3 text-left border border-slate-200 hover:border-sky-500 rounded-xl bg-slate-50/70 hover:bg-sky-50/50 transition-all flex flex-col justify-between">
+                <div>
+                  <div class="flex items-center space-x-1.5 text-xs font-bold text-slate-800">
+                    <i data-lucide="file-text" class="w-4 h-4 text-sky-600"></i>
+                    <span>Cardiology Rx</span>
+                  </div>
+                  <p class="text-[11px] text-slate-500 mt-1">Warfarin + Aspirin (Trigger Interaction)</p>
+                </div>
+                <span class="mt-2 text-[10px] text-sky-600 font-semibold">+ Load Document</span>
+              </button>
+
+              <button onclick="loadDemoDoc('lab')" class="p-3 text-left border border-slate-200 hover:border-sky-500 rounded-xl bg-slate-50/70 hover:bg-sky-50/50 transition-all flex flex-col justify-between">
+                <div>
+                  <div class="flex items-center space-x-1.5 text-xs font-bold text-slate-800">
+                    <i data-lucide="activity" class="w-4 h-4 text-emerald-600"></i>
+                    <span>Biochemistry Report</span>
+                  </div>
+                  <p class="text-[11px] text-slate-500 mt-1">HbA1c 8.6%, Creatinine 1.8 (Abnormal)</p>
+                </div>
+                <span class="mt-2 text-[10px] text-emerald-600 font-semibold">+ Load Document</span>
+              </button>
+
+              <button onclick="loadDemoDoc('ayush')" class="p-3 text-left border border-slate-200 hover:border-sky-500 rounded-xl bg-slate-50/70 hover:bg-sky-50/50 transition-all flex flex-col justify-between">
+                <div>
+                  <div class="flex items-center space-x-1.5 text-xs font-bold text-slate-800">
+                    <i data-lucide="leaf" class="w-4 h-4 text-teal-600"></i>
+                    <span>AIIA Ayush Slip</span>
+                  </div>
+                  <p class="text-[11px] text-slate-500 mt-1">Arjuna Kwatha, Nadi Pariksha</p>
+                </div>
+                <span class="mt-2 text-[10px] text-teal-600 font-semibold">+ Load Document</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- File Upload Zone -->
+          <div class="border-2 border-dashed border-slate-200 rounded-2xl p-6 text-center hover:border-sky-500 transition-all bg-slate-50/50 cursor-pointer" onclick="document.getElementById('fileInputKiosk').click()">
+            <input type="file" id="fileInputKiosk" class="hidden" onchange="handleFileUpload(event)">
+            <i data-lucide="upload-cloud" class="w-10 h-10 text-slate-400 mx-auto mb-2"></i>
+            <p class="text-sm font-semibold text-slate-700">Tap to upload document photo or PDF</p>
+            <p class="text-xs text-slate-400 mt-1">Encrypted at rest with AES-256 Fernet cipher (DPDP Act)</p>
+          </div>
+
+          <!-- Real-Time Extracted Documents Timeline Card -->
+          <div id="extractedDocResults" class="space-y-3">
+            <!-- Dynamically injected document preview cards -->
+          </div>
+
+          <div class="flex justify-between items-center pt-2">
+            <button onclick="skipDocumentsAndProceed()" class="px-4 py-2 border border-slate-300 rounded-xl text-slate-600 text-sm font-medium hover:bg-slate-50">
+              Skip Uploads
+            </button>
+            <button onclick="generateSummaryAndProceed()" class="bg-sky-600 hover:bg-sky-700 text-white font-semibold px-6 py-2.5 rounded-xl shadow text-sm flex items-center space-x-2">
+              <span>Review & Confirm Case</span>
+              <i data-lucide="arrow-right" class="w-4 h-4"></i>
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Step 4: Final Confirmation & Token Number Generation -->
+      <div id="kioskStepConfirm" class="hidden max-w-2xl mx-auto space-y-6">
+        <div class="bg-white rounded-2xl border border-slate-200 p-8 shadow-sm space-y-6 text-center">
+          
+          <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-2">
+            <i data-lucide="check-circle-2" class="w-9 h-9"></i>
+          </div>
+
+          <div>
+            <span class="text-xs font-bold text-emerald-600 uppercase tracking-wider">CASE TAKING COMPLETED</span>
+            <h2 class="text-2xl font-bold text-slate-900 mt-1" id="txtTokenTitle">Your Appointment Token</h2>
+          </div>
+
+          <!-- Big Token Box -->
+          <div class="bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-2xl p-6 shadow-xl space-y-3">
+            <p class="text-xs font-semibold text-slate-400 uppercase tracking-widest">Queue Token Number</p>
+            <div id="txtTokenNumber" class="text-5xl font-black text-amber-400 tracking-wider font-mono">TK-042</div>
+            <div class="flex justify-center space-x-6 text-xs text-slate-300 border-t border-slate-700 pt-3">
+              <div>Counter: <span class="font-bold text-white">OPD Room 4</span></div>
+              <div>Estimated Wait: <span class="font-bold text-white">5-10 Mins</span></div>
+              <div>Priority: <span id="txtTriagePriority" class="font-bold text-red-400">EMERGENCY RED FLAG</span></div>
+            </div>
+          </div>
+
+          <!-- Vernacular Patient Confirmation Summary -->
+          <div class="bg-slate-50 border border-slate-200 rounded-xl p-4 text-left space-y-2">
+            <p class="text-xs font-bold text-slate-500 uppercase tracking-wider">मरीज के लिए सारांश / Patient Confirmation Summary</p>
+            <p id="txtPatientSummaryVernacular" class="text-sm text-slate-800 leading-relaxed font-medium">
+              आपको 2 दिनों से सीने में भारीपन व पसीना आने की शिकायत है। डॉक्टर को आपकी आपातकालीन स्थिति के बारे में सूचित कर दिया गया है।
+            </p>
+          </div>
+
+          <!-- Session Wipe Alert -->
+          <div class="bg-sky-50 border border-sky-100 rounded-xl p-3 text-xs text-sky-800 flex items-center space-x-2 text-left">
+            <i data-lucide="lock" class="w-4 h-4 text-sky-600 flex-shrink-0"></i>
+            <span>Privacy Guard: Temporary voice recording buffer wiped per DPDP Act 2023 regulations.</span>
+          </div>
+
+          <div class="flex flex-col sm:flex-row gap-3 pt-2">
+            <button onclick="wipeSessionAndFinish()" class="flex-1 bg-slate-900 hover:bg-black text-white font-semibold py-3 px-4 rounded-xl shadow transition-all">
+              Complete & Print Token (Wipe Session)
+            </button>
+            <button onclick="switchView('doctor')" class="bg-sky-600 hover:bg-sky-700 text-white font-semibold py-3 px-4 rounded-xl shadow transition-all flex items-center justify-center space-x-2">
+              <i data-lucide="stethoscope" class="w-4 h-4"></i>
+              <span>View on Doctor's Screen</span>
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+    </section>
+
+    <!-- ==================== VIEW 2: DOCTOR CLINICAL PORTAL ==================== -->
+    <section id="viewDoctor" class="hidden space-y-6">
+
+      <!-- Doctor Stats Header -->
+      <div class="grid grid-cols-1 sm:grid-cols-4 gap-4">
+        <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-lg bg-sky-100 text-sky-600 flex items-center justify-center">
+            <i data-lucide="users" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <p class="text-xs text-slate-500 font-medium">Total Screened</p>
+            <p id="statTotal" class="text-xl font-bold text-slate-900">3</p>
+          </div>
+        </div>
+
+        <div class="bg-white p-4 rounded-xl border border-red-200 shadow-sm flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-lg bg-red-100 text-red-600 flex items-center justify-center">
+            <i data-lucide="alert-octagon" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <p class="text-xs text-red-600 font-bold">Critical Red Flags</p>
+            <p id="statRedFlags" class="text-xl font-bold text-red-700">1 (Triage High)</p>
+          </div>
+        </div>
+
+        <div class="bg-white p-4 rounded-xl border border-amber-200 shadow-sm flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center">
+            <i data-lucide="clock" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <p class="text-xs text-amber-600 font-medium">Pending Review</p>
+            <p id="statPending" class="text-xl font-bold text-amber-700">2</p>
+          </div>
+        </div>
+
+        <div class="bg-white p-4 rounded-xl border border-emerald-200 shadow-sm flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center">
+            <i data-lucide="check-check" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <p class="text-xs text-emerald-600 font-medium">Accepted & Pushed</p>
+            <p id="statAccepted" class="text-xl font-bold text-emerald-700">1</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Doctor Split View -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+        <!-- Left Column: Patient Triage Queue (Strictly Red Flags on Top) -->
+        <div class="lg:col-span-4 bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-4">
+          <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+            <div>
+              <h2 class="font-bold text-slate-900 text-base">Active Triage Queue</h2>
+              <p class="text-xs text-slate-500">Sorted: Red Flags Emergency First</p>
+            </div>
+            <button onclick="refreshDoctorQueue()" class="text-slate-400 hover:text-slate-600 p-1" title="Refresh">
+              <i data-lucide="refresh-cw" class="w-4 h-4"></i>
+            </button>
+          </div>
+
+          <!-- Queue Items List -->
+          <div id="doctorQueueList" class="space-y-2.5 max-h-[600px] overflow-y-auto pr-1">
+            <!-- Dynamically populated patient queue cards -->
+          </div>
+        </div>
+
+        <!-- Right Column: Detailed Clinical Case Summary Inspector -->
+        <div class="lg:col-span-8 bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-6">
+          
+          <!-- Inspector Header -->
+          <div class="flex flex-wrap items-center justify-between border-b border-slate-100 pb-4 gap-3">
+            <div>
+              <div class="flex items-center space-x-2">
+                <h2 id="inspPatientName" class="text-xl font-bold text-slate-900">Smt. Shanti Devi</h2>
+                <span id="inspTokenBadge" class="bg-amber-100 text-amber-800 text-xs font-bold px-2 py-0.5 rounded font-mono">TK-042</span>
+                <span id="inspRedFlagBadge" class="bg-red-600 text-white text-xs font-bold px-2 py-0.5 rounded pulse-red-flag">RED FLAG: ACS SUSPECT</span>
+              </div>
+              <p id="inspPatientMeta" class="text-xs text-slate-500 mt-1">62Y / Female | ABHA: 91-8822-1144-5566 | Phone: +919876543210</p>
+            </div>
+
+            <!-- Doctor Decision Buttons -->
+            <div class="flex items-center space-x-2">
+              <button onclick="doctorAction('ACCEPT')" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3.5 py-2 rounded-xl text-xs font-bold shadow flex items-center space-x-1.5">
+                <i data-lucide="check" class="w-4 h-4"></i>
+                <span>Accept Draft</span>
+              </button>
+              <button onclick="toggleEditSummaryModal()" class="bg-sky-600 hover:bg-sky-700 text-white px-3.5 py-2 rounded-xl text-xs font-bold shadow flex items-center space-x-1.5">
+                <i data-lucide="edit-3" class="w-4 h-4"></i>
+                <span>Edit / Add Notes</span>
+              </button>
+              <button onclick="doctorAction('REJECT')" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 py-2 rounded-xl text-xs font-bold">
+                Reject
+              </button>
+            </div>
+          </div>
+
+          <!-- Clinical Disclaimer Banner -->
+          <div class="bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs text-slate-600 flex items-center space-x-2">
+            <i data-lucide="info" class="w-4 h-4 text-sky-600 flex-shrink-0"></i>
+            <span><strong>Clinical Safety Protocol:</strong> AI drafts findings only with explicit provenance tags. The physician retains full diagnostic responsibility.</span>
+          </div>
+
+          <!-- Structured Summary Sections -->
+          <div id="inspectorSections" class="space-y-4 text-sm text-slate-800">
+            <!-- Dynamically populated structured clinical summary -->
+          </div>
+
+          <!-- Action Footbar: Export & Push to HIS / FHIR -->
+          <div class="border-t border-slate-100 pt-4 flex flex-wrap items-center justify-between gap-3">
+            <div class="text-xs text-slate-500">
+              Export format: <span class="font-semibold text-slate-700">HL7 FHIR R4 Bundle (ABDM Compliant)</span>
+            </div>
+            <button onclick="exportAndPushHis()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-xs font-bold shadow flex items-center space-x-2">
+              <i data-lucide="send" class="w-4 h-4"></i>
+              <span>Export & Push to ABDM / HIS</span>
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ==================== VIEW 3: PATIENT PERSONAL HEALTH RECORD ==================== -->
+    <section id="viewPatient" class="hidden space-y-6 max-w-4xl mx-auto">
+      <div class="bg-white rounded-2xl border border-slate-200 p-8 shadow-sm space-y-6">
+        
+        <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+          <div class="flex items-center space-x-3">
+            <div class="w-12 h-12 rounded-xl bg-teal-100 text-teal-700 flex items-center justify-center font-bold text-lg">
+              <i data-lucide="user-check" class="w-6 h-6"></i>
+            </div>
+            <div>
+              <h2 class="text-xl font-bold text-slate-900">Patient Health Record & Consent Vault</h2>
+              <p class="text-xs text-slate-500">Manage your past clinic records, document timelines, and DPDP privacy settings.</p>
+            </div>
+          </div>
+          <!-- Revoke Consent Button -->
+          <button onclick="revokePatientConsent()" class="px-3.5 py-1.5 border border-red-300 text-red-700 hover:bg-red-50 text-xs font-semibold rounded-xl flex items-center space-x-1.5">
+            <i data-lucide="shield-x" class="w-4 h-4"></i>
+            <span>Revoke DPDP Consent</span>
+          </button>
+        </div>
+
+        <!-- Patient Demographics Card -->
+        <div class="bg-slate-50 rounded-xl p-4 border border-slate-200 grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+          <div>
+            <p class="text-slate-400">Name</p>
+            <p class="font-bold text-slate-800 text-sm">Smt. Shanti Devi</p>
+          </div>
+          <div>
+            <p class="text-slate-400">ABHA Number</p>
+            <p class="font-bold text-slate-800 text-sm">91-8822-1144-5566</p>
+          </div>
+          <div>
+            <p class="text-slate-400">Age / Gender</p>
+            <p class="font-bold text-slate-800 text-sm">62 Years / Female</p>
+          </div>
+          <div>
+            <p class="text-slate-400">Consent Status</p>
+            <p id="lblPhrConsentStatus" class="font-bold text-emerald-600 text-sm">Active & Compliant</p>
+          </div>
+        </div>
+
+        <!-- Chronological Timeline -->
+        <div class="space-y-3">
+          <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider">Medical Timeline</h3>
+          <div id="phrTimelineList" class="space-y-3">
+            <!-- Timeline elements -->
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FHIR R4 Bundle Modal -->
+  <div id="modalFhir" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-3xl w-full p-6 shadow-2xl space-y-4 max-h-[85vh] flex flex-col">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div class="flex items-center space-x-2">
+          <span class="bg-indigo-100 text-indigo-800 text-xs font-bold px-2 py-0.5 rounded">HL7 FHIR R4</span>
+          <h3 class="font-bold text-slate-900 text-base">ABDM / HIS Encounter Bundle</h3>
+        </div>
+        <button onclick="closeFhirModal()" class="text-slate-400 hover:text-slate-600">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="flex-1 overflow-y-auto">
+        <pre id="txtFhirJson" class="bg-slate-900 text-emerald-400 p-4 rounded-xl text-xs font-mono overflow-x-auto leading-relaxed"></pre>
+      </div>
+
+      <div class="flex justify-between items-center pt-2 border-t border-slate-100">
+        <span class="text-xs text-slate-500">Includes Patient, Condition, MedicationStatement, Observation, AllergyIntolerance</span>
+        <button onclick="copyFhirJson()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-4 py-2 rounded-xl flex items-center space-x-1.5">
+          <i data-lucide="copy" class="w-4 h-4"></i>
+          <span>Copy JSON</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Summary Modal for Doctor -->
+  <div id="modalEditSummary" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-2xl w-full p-6 shadow-2xl space-y-4">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h3 class="font-bold text-slate-900 text-base">Physician Review & Clinical Notes</h3>
+        <button onclick="toggleEditSummaryModal()" class="text-slate-400 hover:text-slate-600">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="space-y-3">
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Doctor's Clinical Notes / Prescription Additions</label>
+          <textarea id="inpDoctorNotes" rows="4" class="w-full text-sm border border-slate-300 rounded-xl p-3 focus:ring-2 focus:ring-sky-500" placeholder="e.g., Confirmed acute retrosternal distress. Ordered urgent 12-lead ECG, Troponin-I, and sublingual Sorbitrate."></textarea>
+        </div>
+      </div>
+
+      <div class="flex justify-end space-x-2 pt-2 border-t border-slate-100">
+        <button onclick="toggleEditSummaryModal()" class="px-4 py-2 border border-slate-300 text-slate-700 text-xs font-semibold rounded-xl hover:bg-slate-50">Cancel</button>
+        <button onclick="saveDoctorEdits()" class="bg-sky-600 hover:bg-sky-700 text-white text-xs font-semibold px-4 py-2 rounded-xl shadow">Save & Update Draft</button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="bg-white border-t border-slate-200 mt-auto py-3 text-center text-xs text-slate-400">
+    MediKiosk Clinical Platform | SIH 2026 Problem Statement SIH26047 | Ministry of Ayush & AIIA
+  </footer>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
